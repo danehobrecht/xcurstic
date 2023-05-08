@@ -1,6 +1,9 @@
 #include <math.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <X11/X.h>
+#include <X11/keysymdef.h>
+#include <X11/keysym.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
@@ -8,7 +11,7 @@
 #include <linux/joystick.h>
 #include <X11/extensions/XTest.h>
 
-const int MAX_SPEED = 20;
+const int MAX_SPEED = 2;
 const int CLICK_DELAY = 50;
 const int SCROLL_MULTIPLIER = 1;
 const int CURSOR_UPDATE_FREQUENCY = 160;
@@ -79,20 +82,27 @@ int main() {
 				}
 				break;
 			case JS_EVENT_BUTTON:
+				// Left click
 				if (js.number == 0 && js.value == 1) {
 					XTestFakeButtonEvent(display, 1, True, CurrentTime);
 					XFlush(display);
 					usleep(CLICK_DELAY * 1000);
 					XTestFakeButtonEvent(display, 1, False, CurrentTime);
 					XFlush(display);
+				// Right click
 				} else if (js.number == 1 && js.value == 1) {
 					XTestFakeButtonEvent(display, 3, True, CurrentTime);
 					XFlush(display);
 					usleep(CLICK_DELAY * 1000);
 					XTestFakeButtonEvent(display, 3, False, CurrentTime);
 					XFlush(display);
+				// Super key
+				} else if (js.number == 12 && js.value == 1) {
+					XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Super_L), True, CurrentTime);
+					XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Super_L), False, CurrentTime);
+					XFlush(display);
 				}
-				// std::cout << "Button " << static_cast<int>(js.number) << " " << (js.value ? "pressed" : "released") << std::endl;
+				std::cout << "Button " << static_cast<int>(js.number) << " " << (js.value ? "pressed" : "released") << std::endl;
 				break;
 			default:
 				break;
