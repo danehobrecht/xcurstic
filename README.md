@@ -1,1 +1,1 @@
-g++ xcurstic.cpp -o xcurstic -lX11 -lXtst && sudo ./xcurstic
+`g++ xcurstic.cpp -o xcurstic -lX11 -lXtst && sudo ./xcurstic`
