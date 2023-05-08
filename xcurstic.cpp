@@ -10,8 +10,8 @@
 
 const int MAX_SPEED = 20;
 const double MAX_VELOCITY = 50.0;
-const double MAX_JOYSTICK = 32767;
-const int CURSOR_UPDATE_FREQUENCY = 60;
+const double MAX_JOYSTICK = 32676;
+const int CURSOR_UPDATE_FREQUENCY = 160;
 const double JOYSTICK_CENTER_THRESHOLD = 0.1;
 
 int main() {
@@ -31,7 +31,7 @@ int main() {
 
 	joy_fd = open(device, O_RDONLY);
 	if (joy_fd < 0) {
-		std::cerr << "Failed to open joystick device." << std::endl;
+		std::cerr << "Error: Failed to detect Xbox One Controller (is it on?)." << std::endl;
 		return 1;
 	}
 
