@@ -8,6 +8,7 @@
 #include <linux/joystick.h>
 #include <X11/extensions/XTest.h>
 
+const int CLICK_DELAY = 50;
 const int MAX_SPEED = 20;
 const double MAX_VELOCITY = 50.0;
 const double MAX_JOYSTICK = 32676;
@@ -61,6 +62,22 @@ int main() {
 					dy = js.value;
 				}
 				break;
+			case JS_EVENT_BUTTON:
+				if (js.number == 0 && js.value == 1) {
+					XTestFakeButtonEvent(display, 1, True, CurrentTime);
+					XFlush(display);
+					usleep(CLICK_DELAY * 1000);
+					XTestFakeButtonEvent(display, 1, False, CurrentTime);
+					XFlush(display);
+				} else if (js.number == 1 && js.value == 1) {
+					XTestFakeButtonEvent(display, 3, True, CurrentTime);
+					XFlush(display);
+					usleep(CLICK_DELAY * 1000);
+					XTestFakeButtonEvent(display, 3, False, CurrentTime);
+					XFlush(display);
+				}
+				// std::cout << "Button " << static_cast<int>(js.number) << " " << (js.value ? "pressed" : "released") << std::endl;
+				break;
 			default:
 				break;
 		}
@@ -78,40 +95,6 @@ int main() {
 			int y_speed = round(speed * dy / magnitude);
 			XTestFakeRelativeMotionEvent(display, x_speed, y_speed, 0);
 			XFlush(display);
-		}
-
-		// Calculate cursor movement based on right joystick input
-		int rx = 0, ry = 0;
-		bytes = read(joy_fd, &js, sizeof(js_event));
-		if (bytes == sizeof(js_event)) {
-			switch (js.type & ~JS_EVENT_INIT) {
-				case JS_EVENT_AXIS:
-					if (js.number == 2) {
-						// Right joystick X-axis
-						rx = js.value;
-					} else if (js.number == 3 ) {
-						// Right joystick Y-axis
-						ry = js.value;
-					}
-					break;
-
-				default:
-					break;
-			}
-
-			// Warp cursor based on right joystick input
-			if (rx != 0 || ry != 0) {
-				double x_scale = rx / MAX_JOYSTICK;
-				double y_scale = ry / MAX_JOYSTICK;
-
-				// Calculate the velocity based on how far the joystick is from the center
-				double magnitude = sqrt(rx * rx + ry * ry);
-				double velocity = magnitude / MAX_JOYSTICK * MAX_VELOCITY;
-
-				// Warp cursor with a scaled velocity
-				XWarpPointer(display, None, root_window, 0, 0, 0, 0, x_scale * velocity, y_scale * velocity);
-				XFlush(display);
-			}
 		}
 		usleep(1000000 / CURSOR_UPDATE_FREQUENCY);
 	}
