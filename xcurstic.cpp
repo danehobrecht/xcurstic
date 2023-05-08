@@ -8,11 +8,12 @@
 #include <linux/joystick.h>
 #include <X11/extensions/XTest.h>
 
-const int CLICK_DELAY = 50;
 const int MAX_SPEED = 20;
+const int CLICK_DELAY = 50;
+const int SCROLL_MULTIPLIER = 1;
+const int CURSOR_UPDATE_FREQUENCY = 160;
 const double MAX_VELOCITY = 50.0;
 const double MAX_JOYSTICK = 32676;
-const int CURSOR_UPDATE_FREQUENCY = 160;
 const double JOYSTICK_CENTER_THRESHOLD = 0.1;
 
 int main() {
@@ -60,6 +61,21 @@ int main() {
 				} else if (js.number == 1 ) {
 					// Left joystick Y-axis
 					dy = js.value;
+				} else if (js.number == 3) {
+					// Right joystick Y-axis
+					static int scroll_accum = 0;
+					int scroll_speed = -js.value / (MAX_JOYSTICK / 2);
+					scroll_accum += scroll_speed;
+					if (scroll_accum >= 1 || scroll_accum <= -1) {
+						int scroll_steps = scroll_accum / 2 * SCROLL_MULTIPLIER;
+						for (int i = 0; i < abs(scroll_steps); i++) {
+							XTestFakeButtonEvent(display, scroll_steps > 0 ? Button4 : Button5, True, CurrentTime);
+							XTestFakeButtonEvent(display, scroll_steps > 0 ? Button4 : Button5, False, CurrentTime);
+							XFlush(display);
+							usleep(1000);
+						}
+						scroll_accum -= scroll_steps * 1.2;
+					}
 				}
 				break;
 			case JS_EVENT_BUTTON:
