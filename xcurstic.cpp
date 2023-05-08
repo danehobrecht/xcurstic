@@ -11,7 +11,7 @@
 #include <linux/joystick.h>
 #include <X11/extensions/XTest.h>
 
-const int MAX_SPEED = 2;
+const int MAX_SPEED = 8;
 const int CLICK_DELAY = 50;
 const int SCROLL_MULTIPLIER = 1;
 const int CURSOR_UPDATE_FREQUENCY = 160;
