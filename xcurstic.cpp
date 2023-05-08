@@ -1,5 +1,3 @@
-// g++ xcurstic.cpp -o xcurstic -lX11 -lXtst && sudo ./xcurstic
-
 #include <math.h>
 #include <fcntl.h>
 #include <stdio.h>
