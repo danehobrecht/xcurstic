@@ -74,10 +74,9 @@ int main() {
 						for (int i = 0; i < abs(scroll_steps); i++) {
 							XTestFakeButtonEvent(display, scroll_steps > 0 ? Button4 : Button5, True, CurrentTime);
 							XTestFakeButtonEvent(display, scroll_steps > 0 ? Button4 : Button5, False, CurrentTime);
-							XFlush(display);
-							usleep(1000);
 						}
 						scroll_accum -= scroll_steps * 1.2;
+						XFlush(display);
 					}
 				}
 				break;
