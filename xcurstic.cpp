@@ -2,12 +2,12 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <X11/X.h>
-#include <X11/keysymdef.h>
-#include <X11/keysym.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <iostream>
 #include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include <X11/keysymdef.h>
 #include <linux/joystick.h>
 #include <X11/extensions/XTest.h>
 
@@ -102,7 +102,7 @@ int main() {
 					XTestFakeKeyEvent(display, XKeysymToKeycode(display, XK_Super_L), False, CurrentTime);
 					XFlush(display);
 				}
-				std::cout << "Button " << static_cast<int>(js.number) << " " << (js.value ? "pressed" : "released") << std::endl;
+				std::cout << "js.number " << static_cast<int>(js.number) << " " << (js.value ? "pressed" : "released") << std::endl;
 				break;
 			default:
 				break;
@@ -122,7 +122,7 @@ int main() {
 			XTestFakeRelativeMotionEvent(display, x_speed, y_speed, 0);
 			XFlush(display);
 		}
-		usleep(1000000 / CURSOR_UPDATE_FREQUENCY);
+		usleep(1000);
 	}
 
 	// Close joystick device and X11 display
